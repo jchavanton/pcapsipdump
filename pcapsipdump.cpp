@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
 
 
     /* Retrieve the packets */
-    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= 0){
+    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) != -2){
 	{
 	    struct iphdr *header_ip;
 	    struct udphdr *header_udp;
@@ -447,7 +447,11 @@ int main(int argc, char *argv[])
     ct->do_cleanup(1<<31);
     /* And close the session */
     pcap_close(handle);
-    return(0);
+    if (verbosity >= 3){
+		printf ("Closing pcap file\n");
+	}
+
+	return(0);
 }
 
 int get_sip_peername(char *data, int data_len, const char *tag, char *peername, int peername_len){
