@@ -23,3 +23,9 @@ pcapsipdump -r <bulkfile> -d <dir-for-bunch-of-files>
 
 for Red Hat/CentOS/Fedora rpm instructions see redhat/ dir
 for Debian-specific instructions, see debian/ dir
+
+
+Build with g++ one-liner:
+g++ pcapsipdump.cpp calltable.cpp -lpcap -o pcapsipdump
+
+
