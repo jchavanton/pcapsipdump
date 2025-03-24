@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
     }
 
     /* Retrieve the packets */
-    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= 0){
+    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= -2){
 	{
 	    struct iphdr *header_ip;
 	    struct ipv6hdr *header_ipv6;
@@ -688,6 +688,9 @@ int main(int argc, char *argv[])
     ct->do_cleanup(INT32_MAX);
     // close libpcap session
     pcap_close(handle);
+	if (verbosity >= 3){
+		printf ("Closing pcap file\n");
+	}
     // wait for forked processes;
     {
         int status;
