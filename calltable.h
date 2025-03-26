@@ -48,6 +48,7 @@ struct calltable_element {
 	int ip_n;
 	time_t first_packet_time;
 	time_t last_packet_time;
+	unsigned long packets;
 	pcap_dumper_t *f_pcap;
 	char fn_pcap[128];
 };

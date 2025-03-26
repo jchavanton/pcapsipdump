@@ -564,6 +564,7 @@ int main(int argc, char *argv[])
                         (opt_rtpsave != RTPSAVE_RTPEVENT ||
                          data[1] == ce->rtpmap_event)) {
                         ce->last_packet_time=pkt_header->ts.tv_sec;
+			ce->packets++;
                         pcap_dump((u_char *)ce->f_pcap, pkt_header, pkt_data);
                         if (opt_packetbuffered) {
                             pcap_dump_flush(ce->f_pcap);
@@ -577,6 +578,7 @@ int main(int argc, char *argv[])
                     if (ce->f_pcap != NULL &&
                         (opt_rtpsave != RTPSAVE_RTPEVENT || data[1] == ce->rtpmap_event)) {
                         ce->last_packet_time=pkt_header->ts.tv_sec;
+			ce->packets++;
                         pcap_dump((u_char *)ce->f_pcap, pkt_header, pkt_data);
                         if (opt_packetbuffered) {
                             pcap_dump_flush(ce->f_pcap);
@@ -645,7 +647,7 @@ int main(int argc, char *argv[])
                     if(idx>=0){
                         char *sdp = NULL;
                         if (strcmp(sip_method,"BYE")==0){
-                            printf("SIP[%s][%s]\n", callid, sip_method);
+                            printf("SIP[%s][%s] packets[%ld]\n", callid, sip_method, ct->table[idx].packets);
                             ct->table[idx].had_bye=1;
                         }
                         s=gettag(data,datalen,"Content-Type:",&l) ? :
