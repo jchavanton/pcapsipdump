@@ -645,6 +645,7 @@ int main(int argc, char *argv[])
                     if(idx>=0){
                         char *sdp = NULL;
                         if (strcmp(sip_method,"BYE")==0){
+                            printf("SIP[%s][%s]\n", callid, sip_method);
                             ct->table[idx].had_bye=1;
                         }
                         s=gettag(data,datalen,"Content-Type:",&l) ? :
