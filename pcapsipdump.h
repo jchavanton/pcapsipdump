@@ -26,7 +26,7 @@
     Project's home: http://pcapsipdump.sf.net/
 */
 
-#define PCAPSIPDUMP_VERSION "0.2-trunk"
+#define PCAPSIPDUMP_VERSION "0.0.0"
 
 #include "pcapsipdump_endian.h"
 
