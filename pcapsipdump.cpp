@@ -151,6 +151,8 @@ int parse_sdp(const char *sdp, size_t sdplen, calltable_element *ce)
 
 int main(int argc, char *argv[])
 {
+	// char buffer[8192];
+	// setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
 
     pcap_t *handle;/* Session handle */
     // directory/filename template, where .pcap files are written
@@ -428,7 +430,8 @@ int main(int argc, char *argv[])
     }
 
     /* Retrieve the packets */
-    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= -2){
+    int pkts = 0;
+    while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= 0){
 	{
 	    struct iphdr *header_ip;
 	    struct ipv6hdr *header_ipv6;
@@ -439,6 +442,10 @@ int main(int argc, char *argv[])
 	    int idx=-1;
             char sip_method[10] = "";
 
+	pkts ++;
+	if (pkts % 10000 == 0) {
+		printf("packet processed:%d\n", pkts);
+	}
             if(res == 0)
                 /* Timeout elapsed */
                 continue;
@@ -562,7 +569,7 @@ int main(int argc, char *argv[])
                             pcap_dump_flush(ce->f_pcap);
                         }
                     }
-                }else if (save_this_rtp_packet &&
+                } else if (save_this_rtp_packet &&
                         ct->find_ip_port_ssrc(
                             hsaddr(header_ip),htons(header_udp->source) & rtp_port_mask,
                             get_ssrc(data,is_rtcp),
@@ -575,7 +582,7 @@ int main(int argc, char *argv[])
                             pcap_dump_flush(ce->f_pcap);
                         }
                     }
-                }else if (get_method(data, sip_method, sizeof(sip_method)) ||
+                } else if (get_method(data, sip_method, sizeof(sip_method)) ||
                           !memcmp(data, "SIP/2.0 ", strlen("SIP/2.0 "))) {
                     char caller[256] = "";
                     char called[256] = "";
@@ -604,10 +611,10 @@ int main(int argc, char *argv[])
                                          called,
                                          pkt_header->ts.tv_sec))<0){
 			    printf("Too many simultaneous calls. Ran out of call table space!\n");
-			}else{
+			} else {
 			    if (regexec(&method_filter, sip_method, 1, pmatch, 0) == 0){
                                 if ((--call_skip_cnt)>0){
-                                    if (verbosity>=3){
+                                    if (verbosity>=2){
                                         printf("Skipping %s call from %s to %s \n",sip_method,caller,called);
                                     }
                                     ct->table[idx].f_pcap=NULL;
@@ -624,7 +631,9 @@ int main(int argc, char *argv[])
                                     ct->table[idx].f_pcap = pcap_dump_open(handle, fn);
                                     strlcpy(ct->table[idx].fn_pcap, fn, sizeof(ct->table[idx].fn_pcap));
                                 }
-			    }else{
+                                printf("SIP[%s][%s]\n", callid, sip_method);
+
+			    } else {
 				if (verbosity>=2){
 				    printf("Unknown SIP method:'%s'!\n",sip_method);
 				}
@@ -664,7 +673,7 @@ int main(int argc, char *argv[])
                                                                  (uint16_t)frag->id}, ct->table[idx].f_pcap);
 		        }
                     }
-		}else{
+		} else {
 		    if (verbosity>=4){
 			char st1[INET6_ADDRSTRLEN];
 			char st2[INET6_ADDRSTRLEN];
