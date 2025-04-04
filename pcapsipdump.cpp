@@ -637,7 +637,7 @@ int main(int argc, char *argv[])
 
 			    } else {
 				if (verbosity>=2){
-				    printf("Unknown SIP method:'%s'!\n",sip_method);
+				    printf("SIP[%s][%s] error: no matching INVITE found !\n", callid, sip_method);
 				}
 				ct->table[idx].f_pcap=NULL;
 			    }
