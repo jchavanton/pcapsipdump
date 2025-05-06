@@ -181,6 +181,7 @@ int main(int argc, char *argv[])
     regmatch_t pmatch[1];
     const char *pid_file="/var/run/pcapsipdump.pid";
 
+    printf("libpcap version: '%s'\n", pcap_lib_version());
     if ((int)getuid()){
         struct passwd *pw = getpwuid(getuid());
         opt_fntemplate = (char *)malloc(512);
