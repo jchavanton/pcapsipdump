@@ -214,6 +214,8 @@ int calltable::do_cleanup( time_t currtime ){
                     (currtime - table[idx].last_packet_time > 300) ||
                     (currtime - table[idx].first_packet_time > opt_absolute_timeout))){
 	    if (table[idx].f_pcap != NULL){
+		printf("[%ld]calltable: cleaning up[%s]\n", currtime, table[idx].call_id);
+		pcap_dump_flush(table[idx].f_pcap);
 		pcap_dump_close(table[idx].f_pcap);
                 if (erase_non_t38 && !table[idx].had_t38) {
                     unlink(table[idx].fn_pcap);

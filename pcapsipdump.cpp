@@ -278,6 +278,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    printf("opt packet buffered: '%d'\n", opt_packetbuffered);
     // everything that is left unparsed in argument string is pcap filter expression
     if (optind < argc) {
         filter_exp[0]='\0';
@@ -634,11 +635,11 @@ int main(int argc, char *argv[])
                                     ct->table[idx].f_pcap = pcap_dump_open(handle, fn);
                                     strlcpy(ct->table[idx].fn_pcap, fn, sizeof(ct->table[idx].fn_pcap));
                                 }
-                                printf("SIP[%s][%s]\n", callid, sip_method);
+                                printf("[%ld]SIP[%s][%s]\n", pkt_header->ts.tv_sec, callid, sip_method);
 
 			    } else {
 				if (verbosity>=2){
-				    printf("SIP[%s][%s] error: no matching INVITE found !\n", callid, sip_method);
+				    printf("[%ld]SIP[%s][%s] error: no matching INVITE found !\n", pkt_header->ts.tv_sec, callid, sip_method);
 				}
 				ct->table[idx].f_pcap=NULL;
 			    }
@@ -648,7 +649,7 @@ int main(int argc, char *argv[])
                     if(idx>=0){
                         char *sdp = NULL;
                         if (strcmp(sip_method,"BYE")==0){
-                            printf("SIP[%s][%s] packets[%ld]\n", callid, sip_method, ct->table[idx].packets);
+                            printf("[%ld]SIP[%s][%s] packets[%ld]\n", pkt_header->ts.tv_sec, callid, sip_method, ct->table[idx].packets);
                             ct->table[idx].had_bye=1;
                         }
                         s=gettag(data,datalen,"Content-Type:",&l) ? :
@@ -663,6 +664,9 @@ int main(int argc, char *argv[])
                         }
                         if (ct->table[idx].f_pcap!=NULL){
                             pcap_dump((u_char *)ct->table[idx].f_pcap,pkt_header,pkt_data);
+				// if (ferror(ct->table[idx].f_pcap)) {
+				//      printf("SIP[%s][%s] error writing to file\n", callid, sip_method);
+				// }
                             if (opt_packetbuffered) {pcap_dump_flush(ct->table[idx].f_pcap);}
                         }
                         if (header_ip->version == 4 && header_ip->frag_off == htons(0x2000)) { //flags == more fragments and offset == 0
