@@ -432,7 +432,7 @@ int main(int argc, char *argv[])
     }
 
     /* Retrieve the packets */
-    int pkts = 0;
+    uint64_t pkts = 0;
     while((res = pcap_next_ex( handle, &pkt_header, &pkt_data)) >= 0){
 	{
 	    struct iphdr *header_ip;
@@ -446,7 +446,7 @@ int main(int argc, char *argv[])
 
 	pkts ++;
 	if (pkts % 10000 == 0) {
-		printf("packet processed:%d\n", pkts);
+		printf("[%ld] libPCAP packet processed:%" PRIu64 "\n", pkt_header->ts.tv_sec, pkts);
 	}
             if(res == 0)
                 /* Timeout elapsed */
@@ -635,11 +635,11 @@ int main(int argc, char *argv[])
                                     ct->table[idx].f_pcap = pcap_dump_open(handle, fn);
                                     strlcpy(ct->table[idx].fn_pcap, fn, sizeof(ct->table[idx].fn_pcap));
                                 }
-                                printf("[%ld]SIP[%s][%s]\n", pkt_header->ts.tv_sec, callid, sip_method);
+                                printf("[%ld] SIP[%s][%s]\n", pkt_header->ts.tv_sec, callid, sip_method);
 
 			    } else {
 				if (verbosity>=2){
-				    printf("[%ld]SIP[%s][%s] error: no matching INVITE found !\n", pkt_header->ts.tv_sec, callid, sip_method);
+				    printf("[%ld] SIP[%s][%s] error: no matching INVITE found !\n", pkt_header->ts.tv_sec, callid, sip_method);
 				}
 				ct->table[idx].f_pcap=NULL;
 			    }
@@ -649,7 +649,7 @@ int main(int argc, char *argv[])
                     if(idx>=0){
                         char *sdp = NULL;
                         if (strcmp(sip_method,"BYE")==0){
-                            printf("[%ld]SIP[%s][%s] packets[%ld]\n", pkt_header->ts.tv_sec, callid, sip_method, ct->table[idx].packets);
+                            printf("[%ld] SIP[%s][%s] packets[%ld]\n", pkt_header->ts.tv_sec, callid, sip_method, ct->table[idx].packets);
                             ct->table[idx].had_bye=1;
                         }
                         s=gettag(data,datalen,"Content-Type:",&l) ? :
