@@ -649,7 +649,8 @@ int main(int argc, char *argv[])
                     if(idx>=0){
                         char *sdp = NULL;
                         if (strcmp(sip_method,"BYE")==0){
-                            printf("[%ld] SIP[%s][%s] packets[%ld]\n", pkt_header->ts.tv_sec, callid, sip_method, ct->table[idx].packets);
+				printf("[%ld] SIP[%s][%s] packets[%ld] file[%p|%s]\n", pkt_header->ts.tv_sec, callid, sip_method, ct->table[idx].packets
+				     , ct->table[idx].f_pcap, ct->table[idx].fn_pcap);
                             ct->table[idx].had_bye=1;
                         }
                         s=gettag(data,datalen,"Content-Type:",&l) ? :
@@ -664,6 +665,9 @@ int main(int argc, char *argv[])
                         }
                         if (ct->table[idx].f_pcap!=NULL){
                             pcap_dump((u_char *)ct->table[idx].f_pcap,pkt_header,pkt_data);
+				if (strcmp(sip_method,"BYE")==0){
+					pcap_dump_flush(ct->table[idx].f_pcap);
+				}
 				// if (ferror(ct->table[idx].f_pcap)) {
 				//      printf("SIP[%s][%s] error writing to file\n", callid, sip_method);
 				// }
